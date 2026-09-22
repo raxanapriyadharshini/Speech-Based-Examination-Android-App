@@ -1,9 +1,43 @@
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+release/
+
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (SDK path, etc.)
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
 .DS_Store
-/build
-/captures
-.externalNativeBuild
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Keystore / secrets — do NOT commit signing keys
+*.jks
+*.keystore
+
+# Picasa metadata
+.picasa.ini
+.picasaoriginals/
+
+# Log files
+*.log

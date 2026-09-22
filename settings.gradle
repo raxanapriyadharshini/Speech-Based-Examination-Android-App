@@ -1,1 +1,2 @@
+rootProject.name = "Speech-Based-Examination-Android-App"
 include ':app'
