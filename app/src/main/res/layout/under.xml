@@ -1,24 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@drawable/ccc"
-    tools:context="com.example.android.logindemo.Underdep"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/background"
+    android:padding="32dp"
+    tools:context="com.example.android.logindemo.Underdep">
+
+    <ImageView
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:background="@drawable/bg_circle_primary"
+        android:padding="24dp"
+        android:src="@android:drawable/ic_menu_manage"
+        app:tint="@color/colorPrimary"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:contentDescription="Under development" />
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="354dp"
-        android:layout_height="68dp"
-        android:fontFamily="sans-serif-black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Under development"
-        android:textColor="@color/colorAccent"
-        android:textSize="36sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.719"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="430dp" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:textColor="@color/textPrimary"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="This subject's question bank is coming soon."
+        android:textColor="@color/textSecondary"
+        android:textSize="14sp" />
+</LinearLayout>

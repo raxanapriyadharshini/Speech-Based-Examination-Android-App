@@ -1,32 +1,68 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/ddd"
+    android:gravity="center_horizontal"
+    android:background="@color/background"
+    android:padding="24dp"
     tools:context="com.example.android.logindemo.A1">
 
     <TextView
-        android:id="@+id/txv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
-        android:textColor="#000"
-        android:textSize="26sp"
-        android:textStyle="normal"/>
+        android:layout_marginTop="32dp"
+        android:text="YOUR ANSWER"
+        android:textColor="@color/colorPrimary"
+        android:textSize="13sp"
+        android:letterSpacing="0.10"
+        android:textStyle="bold" />
 
-    <ImageView
-        android:id="@+id/btnSpeak"
-        android:layout_width="26dp"
-        android:layout_height="10dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="293dp"
-        android:gravity="center"
-        android:onClick="getSpeechInput"
-        android:src="@drawable/ic_mic" />
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="3dp"
+        app:cardBackgroundColor="@color/surface">
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="28dp">
+
+            <ImageView
+                android:id="@+id/btnSpeak"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:background="@drawable/bg_circle_primary"
+                android:padding="34dp"
+                android:src="@drawable/ic_mic"
+                android:contentDescription="Microphone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Listening… please speak your answer"
+                android:gravity="center"
+                android:textColor="@color/textSecondary"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/txv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:minHeight="40dp"
+                android:textColor="@color/textPrimary"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>
