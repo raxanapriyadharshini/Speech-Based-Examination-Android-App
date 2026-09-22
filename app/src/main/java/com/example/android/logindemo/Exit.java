@@ -7,14 +7,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class Exit extends AppCompatActivity {
 
-    private FirebaseAuth firebaseAuth;
     private Button bttnClr;
     private TextView resultText,textView ,text ;
     Timer timer;
@@ -47,7 +45,6 @@ public class Exit extends AppCompatActivity {
 
             }
         },5000);
-        firebaseAuth = FirebaseAuth.getInstance();
         bttnClr = findViewById(R.id.buttonClear);
         resultText = findViewById(R.id.textViewResult);
         textView = findViewById(R.id.textView2);
@@ -60,7 +57,7 @@ public class Exit extends AppCompatActivity {
         public void onClick(View v){
             if (v.getId() == R.id.buttonClear){
                 resultText.setText("0");
-                firebaseAuth.signOut();
+                SecureStore.get(Exit.this).logout();
                 finish();
                 startActivity(new Intent(Exit.this, MainActivity.class));
             }

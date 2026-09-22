@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
-import androidx.annotation.NonNull;
+import android.util.Patterns;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -14,38 +14,22 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
-
+import java.io.File;
 import java.io.IOException;
 
 public class UpdateProfile extends AppCompatActivity {
 
     private EditText newUserName, newUserEmail, newUserAge;
     private Button save;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseDatabase firebaseDatabase;
     private ImageView updateProfilePic;
-    private static int PICK_IMAGE = 123;
-    Uri imagePath;
-    private StorageReference storageReference;
-    private FirebaseStorage firebaseStorage;
+    private static final int PICK_IMAGE = 123;
+    private Uri imagePath;
+    private SecureStore store;
+    private String currentEmail;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == PICK_IMAGE && resultCode == RESULT_OK && data.getData() != null){
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imagePath = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
@@ -68,62 +52,50 @@ public class UpdateProfile extends AppCompatActivity {
         save = findViewById(R.id.btnSave);
         updateProfilePic = findViewById(R.id.ivProfileUpdate);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseStorage = FirebaseStorage.getInstance();
+        store = SecureStore.get(this);
+        currentEmail = store.getCurrentUser();
 
-        final DatabaseReference databaseReference = firebaseDatabase.getReference(firebaseAuth.getUid());
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                newUserName.setText(userProfile.getUserName());
-                newUserAge.setText(userProfile.getUserAge());
-                newUserEmail.setText(userProfile.getUserEmail());
+        if (currentEmail != null) {
+            UserProfile p = store.getProfile(currentEmail);
+            newUserName.setText(p.getUserName());
+            newUserAge.setText(p.getUserAge());
+            newUserEmail.setText(p.getUserEmail());
+            String imgPath = store.getImagePath(currentEmail);
+            if (imgPath != null && new File(imgPath).exists()) {
+                updateProfilePic.setImageURI(Uri.fromFile(new File(imgPath)));
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(UpdateProfile.this, databaseError.getCode(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        final StorageReference storageReference = firebaseStorage.getReference();
-        storageReference.child(firebaseAuth.getUid()).child("Images/Profile Pic").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get().load(uri).fit().centerCrop().into(updateProfilePic);
-            }
-        });
+        }
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = newUserName.getText().toString();
-                String age = newUserAge.getText().toString();
-                String email = newUserEmail.getText().toString();
+                String name = newUserName.getText().toString().trim();
+                String age = newUserAge.getText().toString().trim();
+                String email = newUserEmail.getText().toString().trim();
 
-                UserProfile userProfile = new UserProfile(age, email, name);
-
-                databaseReference.setValue(userProfile);
-
-                StorageReference imageReference = storageReference.child(firebaseAuth.getUid()).child("Images").child("Profile Pic");  //User id/Images/Profile Pic.jpg
-                UploadTask uploadTask = imageReference.putFile(imagePath);
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(UpdateProfile.this, "Upload failed!", Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        Toast.makeText(UpdateProfile.this, "Upload successful!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+                if (name.isEmpty() || age.isEmpty() || email.isEmpty()) {
+                    Toast.makeText(UpdateProfile.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    Toast.makeText(UpdateProfile.this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (currentEmail == null) {
+                    Toast.makeText(UpdateProfile.this, "No active session", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // Prevent colliding with a different existing account
+                if (!email.equalsIgnoreCase(currentEmail) && store.userExists(email)) {
+                    Toast.makeText(UpdateProfile.this, "That email is already in use", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                store.updateProfile(currentEmail, name, age, email, imagePath);
+                Toast.makeText(UpdateProfile.this, "Profile updated", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -132,7 +104,7 @@ public class UpdateProfile extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent();
-                intent.setType("images/*");
+                intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE);
             }
@@ -141,10 +113,8 @@ public class UpdateProfile extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-            case android.R.id.home:
-                onBackPressed();
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
         }
         return super.onOptionsItemSelected(item);
     }

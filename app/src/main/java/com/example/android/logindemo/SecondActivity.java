@@ -12,11 +12,9 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
 
 public class SecondActivity extends AppCompatActivity {
 
-    private FirebaseAuth firebaseAuth;
     private Button logout;
     Spinner mSpinner;
     TextView mOutputSpinnerTv;
@@ -28,7 +26,6 @@ public class SecondActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-        firebaseAuth = FirebaseAuth.getInstance();
         logout= findViewById(R.id.button);
 
         logout.setOnClickListener(new View.OnClickListener() {
@@ -94,7 +91,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     public void Logout(){
-        firebaseAuth.signOut();
+        SecureStore.get(this).logout();
         finish();
         startActivity(new Intent(SecondActivity.this, MainActivity.class));
     }

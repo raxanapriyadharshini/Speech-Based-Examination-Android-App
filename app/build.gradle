@@ -8,10 +8,10 @@ android {
 
     defaultConfig {
         applicationId "com.example.android.logindemo"
-        minSdk 23
+        minSdk 26
         targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0-local"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -35,20 +35,12 @@ dependencies {
     implementation 'androidx.exifinterface:exifinterface:1.3.7'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    // Firebase (managed via the Bill of Materials so versions stay aligned)
-    implementation platform('com.google.firebase:firebase-bom:33.1.2')
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:firebase-database'
-    implementation 'com.google.firebase:firebase-storage'
-
-    // Image loading
-    implementation 'com.squareup.picasso:picasso:2.8'
+    // Local, encrypted storage (EncryptedSharedPreferences + Android Keystore master key).
+    // Replaces all cloud (Firebase) storage — the app is fully offline.
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
-
-apply plugin: 'com.google.gms.google-services'
