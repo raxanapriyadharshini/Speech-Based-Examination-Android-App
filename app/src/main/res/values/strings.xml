@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">MindBeast</string>
+    <string name="app_name">VoiceExam</string>
+    <string name="tagline">Accessible voice-based examinations</string>
 </resources>
